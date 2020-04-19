@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+#zip files of 3rd party libs
+*.zip
+libraries/
+
