@@ -22,10 +22,12 @@ jobs:
         include:
           # This works like this: when the platform is "arduino:samd", the
           # variable fqbn is set to "arduino:samd:nano_33_iot".
-          - arduino-platform: "arduino:samd"
-            fqbn: "arduino:samd:nano_33_iot"
-          - arduino-platform: "arduino:avr"
-            fqbn: "arduino:avr:uno"
+   #       - arduino-platform: "arduino:samd"
+   #         fqbn: "arduino:samd:nano_33_iot"
+   #       - arduino-platform: "arduino:avr"
+   #         fqbn: "arduino:avr:uno"
+          - ardunino-platform: "digistump-avr"
+            fqbn: "digistump:avr:digispark-tiny"   
   
     steps:
       - name: Checkout
@@ -36,9 +38,9 @@ jobs:
  
       - name: Install platform
         run: |
-          arduino-cli core update-index
+          arduino-cli core update-index  --verbose --additional-urls https://raw.githubusercontent.com/digistump/arduino-boards-index/master/package_digistump_index.json 
           arduino-cli core install ${{ matrix.arduino-platform }}
  
       - name: Compile Sketch
         # the project to compile should probably also be a matrix. Well..
-        run: arduino-cli compile --fqbn ${{ matrix.fqbn }} ./DS_oled
+        run: arduino-cli compile --fqbn ${{ matrix.fqbn }}  ./DS_oled
