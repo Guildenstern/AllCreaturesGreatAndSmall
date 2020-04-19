@@ -40,4 +40,5 @@ jobs:
           arduino-cli core install ${{ matrix.arduino-platform }}
  
       - name: Compile Sketch
-        run: arduino-cli compile --fqbn ${{ matrix.fqbn }} ./DS_oled/DS_oled
+        # the project to compile should probably also be a matrix. Well..
+        run: arduino-cli compile --fqbn ${{ matrix.fqbn }} ./DS_oled
