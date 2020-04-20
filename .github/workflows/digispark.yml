@@ -1,5 +1,3 @@
-name: DigisparkBuilds
-
 # This is for my sketches which use a digispark. 
 # looking at  https://github.com/ArminJo/Github-Actions helped me a lot to do this right. Thanks Armin
 # now I hope I get this running :D
@@ -10,6 +8,8 @@ name: DigisparkBuilds
 # peeps out there! use some sort of CI (continues integration)!
 # -------------------------------------------------------------
 
+name: DigisparkBuilds
+
 # Triggers
 on:
   push:
@@ -18,6 +18,8 @@ on:
     - '**.cpp'
     - '**.h'
     - '**.yml'
+  schedule:
+    - cron: "0 2 1 * 0"
 
 # I use only one job for no particular reason
 jobs:
@@ -67,6 +69,7 @@ jobs:
 
       # I do one step per sketch rather than a fancy scripting which discovers all sketches
       - name: Compile Sketch
-          run: arduino-cli compile --verbose --warnings all --fqbn ${ARDUINO_BOARD_FQBN%|*}  ./DS_oled
+        run: |
+          arduino-cli compile --verbose --warnings all --fqbn ${ARDUINO_BOARD_FQBN%|*}  ./DS_oled
 
         
