@@ -1,0 +1,43 @@
+
+name: UnoBuilds
+
+#Trigger
+on:
+  push:
+    paths:
+    - '**.ino'
+    - '**.cpp'
+    - '**.h'
+    - '**.yml'
+
+#you have one job :)
+jobs:
+  my_job_is_amazing:
+    name: build for arduino uno
+    # pick Windows for no particular reason.
+    runs-on: windows-latest
+    strategy:
+      matrix:
+   #     arduino-platform: ["arduino:samd", "arduino:avr"]
+        arduino-platform: ["arduino:avr"]
+        include:
+   #       - arduino-platform: "arduino:samd"
+   #         fqbn: "arduino:samd:nano_33_iot"
+          - arduino-platform: "arduino:avr"
+            fqbn: "arduino:avr:uno"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+ 
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.0.0
+ 
+      - name: Install Arduino platform(s)
+        run: |
+          arduino-cli core update-index 
+          arduino-cli core install ${{ matrix.arduino-platform }}
+
+      # I will do one step per sketch
+      - name: Compile blink
+        run: arduino-cli compile --fqbn ${{ matrix.fqbn }}  ./blink

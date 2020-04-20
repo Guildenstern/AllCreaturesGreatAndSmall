@@ -1,0 +1,72 @@
+name: DigisparkBuilds
+
+# This is for my sketches which use a digispark. 
+# looking at  https://github.com/ArminJo/Github-Actions helped me a lot to do this right. Thanks Armin
+# now I hope I get this running :D
+# maybe there is a easier way to write this file, since my matrix is only 1x1 big
+# License: MIT lisence
+
+# -------------------------------------------------------------
+# peeps out there! use some sort of CI (continues integration)!
+# -------------------------------------------------------------
+
+# Triggers
+on:
+  push:
+    paths:
+    - '**.ino'
+    - '**.cpp'
+    - '**.h'
+    - '**.yml'
+
+# I use only one job for no particular reason
+jobs:
+  my_job_is_amazing:
+    name: build my digispark foo
+    # pick Windows for no particular reason
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arduino-boards-fqbn:
+          - digistump:avr:digispark-tiny
+        include:
+            #- arduino-boards-fqbn: digistump:avr:digispark-tiny1  # ATtiny85 board @1 MHz
+          - arduino-boards-fqbn: digistump:avr:digispark-tiny  # ATtiny85 based board with roughly 16 MHz
+            platform-url: https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
+
+    # here start the game #
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+ 
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.0.0
+      
+      - name: Greetings
+        run: |
+         echo "hello peeps!"
+
+      - name: Install platform
+        env:
+          ARDUINO_BOARD_FQBN: ${{ matrix.arduino-boards-fqbn }}
+          PLATFORM_URL: ${{ matrix.platform-url }}
+        run: |
+            PLATFORM=${PLATFORM//,/ } # replace all comma by space to enable multiple platforms which are comma separated
+            declare -a PLATFORM_ARRAY=( $PLATFORM )
+            #declare -p PLATFORM_ARRAY # print properties of PLATFORM_ARRAY
+            for single_platform in "${PLATFORM_ARRAY[@]}"; do # Loop over all platforms specified
+                echo -e "arduino-cli core update-index $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null"
+                arduino-cli core update-index $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null # must specify --additional-urls here
+                echo -e "arduino-cli core install $single_platform $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null"
+                arduino-cli core install $single_platform $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null
+            done
+
+      - name: List installed boards with their FQBN
+        run: |
+          arduino-cli board listall
+
+      # I do one step per sketch rather than a fancy scripting which discovers all sketches
+      - name: Compile Sketch
+          run: arduino-cli compile --verbose --warnings all --fqbn ${ARDUINO_BOARD_FQBN%|*}  ./DS_oled
+
+        
