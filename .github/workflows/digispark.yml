@@ -56,11 +56,13 @@ jobs:
             PLATFORM=${PLATFORM//,/ } # replace all comma by space to enable multiple platforms which are comma separated
             declare -a PLATFORM_ARRAY=( $PLATFORM )
             #declare -p PLATFORM_ARRAY # print properties of PLATFORM_ARRAY
-            for single_platform in "${PLATFORM_ARRAY[@]}"; do # Loop over all platforms specified
+            for single_platform in "${PLATFORM_ARRAY[@]}";
+              do # Loop over all platforms specified
                 echo -e "arduino-cli core update-index $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null"
                 arduino-cli core update-index $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null # must specify --additional-urls here
                 echo -e "arduino-cli core install $single_platform $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null"
                 arduino-cli core install $single_platform $PLATFORM_URL_COMMAND $PLATFORM_URL > /dev/null
+                ;
             done
 
       - name: List installed boards with their FQBN
