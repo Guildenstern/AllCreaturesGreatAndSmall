@@ -48,6 +48,9 @@ jobs:
         run: |
          echo "hello peeps!"
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      
       - name: Install platform
         env:
           ARDUINO_BOARD_FQBN: ${{ matrix.arduino-boards-fqbn }}
